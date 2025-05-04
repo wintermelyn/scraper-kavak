@@ -1,0 +1,32 @@
+name: Ejecutar Scraper cada 6 horas
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # Cada 6 horas
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Instalar dependencias
+        working-directory: kavak_scraper
+        run: poetry install --no-interaction
+
+      - name: Ejecutar scraper
+        working-directory: kavak_scraper
+        run: poetry run python scraper/main.py

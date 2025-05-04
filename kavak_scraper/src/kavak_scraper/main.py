@@ -27,7 +27,7 @@ def save_to_json(cars: list[Car], filename: str = "autos.json") -> None:
 
 def get_total_pages(page) -> int:
     pagination_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[4]/div"
-    page.wait_for_selector(f"xpath={pagination_xpath}", timeout=10000)
+    page.wait_for_selector(f"xpath={pagination_xpath}", timeout=30000)
     pagination_container = page.query_selector(f"xpath={pagination_xpath}")
 
     if pagination_container:
@@ -130,7 +130,7 @@ def main():
             url = f"https://www.kavak.com/cl/usados?page={page_num}"
             page.goto(url, timeout=60000)
             content_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[3]"
-            page.wait_for_selector(f"xpath={content_xpath}", timeout=10000)
+            page.wait_for_selector(f"xpath={content_xpath}", timeout=30000)
 
             element = page.query_selector(f"xpath={content_xpath}")
             if element:

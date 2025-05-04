@@ -134,7 +134,11 @@ def main():
             page.goto(url, timeout=60000, wait_until="networkidle")
 
             content_selector = ".results_results__container__tcF4_"
-            page.wait_for_selector(content_selector, timeout=30000)
+            try:
+                page.wait_for_selector(content_selector, timeout=30000)
+            except Exception as e:
+                print(f"Error al esperar el selector de contenido: {e}")
+                page.screenshot(path="error.png")
 
             element = page.query_selector(content_selector)
             if element:

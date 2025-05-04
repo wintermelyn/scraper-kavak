@@ -27,7 +27,11 @@ def save_to_json(cars: list[Car], filename: str = "autos.json") -> None:
 
 def get_total_pages(page) -> int:
     pagination_selector = ".results_results__pagination__yZaD_"
-    page.wait_for_selector(pagination_selector, timeout=30000)
+    try:
+        page.wait_for_selector(pagination_selector, timeout=60000)
+    except TimeoutError:
+        page.screenshot(path="error.png")
+        raise
     pagination_container = page.query_selector(pagination_selector)
 
     if pagination_container:
@@ -117,6 +121,7 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
+
         page = browser.new_page()
 
         page.goto("https://www.kavak.com/cl/usados", timeout=60000)
@@ -129,7 +134,7 @@ def main():
             page.goto(url, timeout=60000, wait_until="networkidle")
 
             content_selector = ".results_results__container__tcF4_"
-            page.wait_for_selector(content_selector, timeout=30000)
+            page.wait_for_selector(content_selector, timeout=60000)
 
             element = page.query_selector(content_selector)
             if element:

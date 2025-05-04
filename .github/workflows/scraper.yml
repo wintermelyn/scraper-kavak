@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Clonar repositorio
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configurar Python
         uses: actions/setup-python@v4
@@ -33,4 +33,12 @@ jobs:
 
       - name: Ejecutar scraper
         working-directory: kavak_scraper
+        continue-on-error: true  # permite que falle sin detener todo
         run: poetry run scrap
+
+      - name: Subir captura si falla
+        if: failure() && exists('kavak_scraper/error.png')
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-error
+          path: kavak_scraper/error.png

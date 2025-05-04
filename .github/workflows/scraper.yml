@@ -2,7 +2,7 @@ name: Ejecutar Scraper cada 6 horas
 
 on:
   schedule:
-    - cron: '0 */6 * * *'   # Cada 6 horas
+    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.12'  # Compatible con tu proyecto
 
       - name: Instalar Poetry
         run: |
@@ -26,6 +26,10 @@ jobs:
       - name: Instalar dependencias
         working-directory: kavak_scraper
         run: poetry install --no-interaction
+
+      - name: Verificar archivos disponibles
+        working-directory: kavak_scraper
+        run: ls -R
 
       - name: Ejecutar scraper
         working-directory: kavak_scraper

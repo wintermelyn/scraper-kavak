@@ -1,4 +1,3 @@
 #!/bin/bash
-cd kavak_scraper
 poetry install --no-root --no-interaction
-poetry run scrap
+poetry run python -m src.kavak_scraper.main

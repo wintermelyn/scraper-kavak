@@ -15,6 +15,8 @@ jobs:
 
       - name: Configurar entorno Python y dependencias
         uses: ./.github/actions/install-env
+        with:
+          working-directory: kavak_scraper  # <-- Aquí se pasa el subdirectorio
 
       - name: Cachear navegadores de Playwright
         uses: actions/cache@v3

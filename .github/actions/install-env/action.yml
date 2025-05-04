@@ -1,6 +1,9 @@
-# .github/actions/install-env.yml
-
 name: Install Python env
+
+inputs:
+  working-directory:
+    description: 'Directorio donde está el pyproject.toml'
+    required: true
 
 runs:
   using: "composite"
@@ -18,8 +21,8 @@ runs:
       id: cached-poetry-dependencies
       uses: actions/cache@v4
       with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}-${{ hashFiles('.github/actions/install-env/action.yml') }}-${{ steps.setup-python.outputs.python-version }}
+        path: ${{ inputs.working-directory }}/.venv
+        key: venv-${{ runner.os }}-${{ hashFiles(format('{0}/poetry.lock', inputs.working-directory)) }}-${{ hashFiles('.github/actions/install-env/action.yml') }}-${{ steps.setup-python.outputs.python-version }}
 
     - name: Load cached .local
       id: cached-dotlocal
@@ -34,14 +37,15 @@ runs:
         virtualenvs-create: true
         virtualenvs-in-project: true
         installer-parallel: true
-        virtualenvs-path: .venv
+        virtualenvs-path: ${{ inputs.working-directory }}/.venv
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
 
     - name: Install dependencies
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction
 
-    - name: Activate environment
+    - name: Activate environment (no-op)
       shell: bash
-      run: source .venv/bin/activate
+      run: echo "env activated (not used between steps)"

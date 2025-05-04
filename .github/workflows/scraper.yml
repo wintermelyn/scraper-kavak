@@ -1,17 +1,10 @@
-name: Ejecutar Scraper cada 6 horas
-
-on:
-  schedule:
-    - cron: '0 */6 * * *'  # Cada 6 horas
-  workflow_dispatch:
-
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
 
     steps:
       - name: Clonar repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Configurar Python
         uses: actions/setup-python@v4
@@ -33,21 +26,12 @@ jobs:
 
       - name: Ejecutar scraper
         working-directory: kavak_scraper
-        continue-on-error: true  # Permitir fallo sin detener el workflow
         run: poetry run scrap
 
-      - name: Preparar captura si existe
-        if: failure()
-        run: |
-          if [ -f "kavak_scraper/error.png" ]; then
-            mkdir -p temp_upload
-            cp kavak_scraper/error.png temp_upload/
-          fi
-
-      - name: Subir captura si fue generada
-        if: failure()
+      - name: Subir screenshot si existe
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: screenshot-error
-          path: temp_upload/error.png
+          path: kavak_scraper/error.png
           if-no-files-found: ignore

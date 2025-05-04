@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
       - name: Configurar entorno Python y dependencias
         uses: ./.github/actions/install-env
 

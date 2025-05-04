@@ -1,11 +1,11 @@
-import re
+import time
 import json
+import re
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+import undetected_chromedriver as uc
 from kavak_scraper.models import Car
+from selenium.webdriver.common.by import By
 
-
-# -------------------- Utilidades --------------------
 
 def parse_price(text: str) -> int | None:
     digits = re.findall(r"\d[\d.]*", text)
@@ -21,26 +21,6 @@ def save_to_json(cars: list[Car], filename: str = "autos.json") -> None:
         encoding="utf-8"
     )
     print(f"\nSe guardaron {len(cars)} autos en {filename}")
-
-
-# -------------------- Scraping --------------------
-
-def get_total_pages(page) -> int:
-    pagination_selector = ".results_results__pagination__yZaD_"
-    try:
-        page.wait_for_selector(pagination_selector, timeout=30000)
-    except Exception as e:
-        print(f"Error al esperar el selector de paginación: {e}")
-        page.screenshot(path="error.png")
-
-    pagination_container = page.query_selector(pagination_selector)
-
-    if pagination_container:
-        numbers = pagination_container.inner_text().split()
-        numeric_pages = [int(n) for n in numbers if n.isdigit()]
-        return max(numeric_pages) if numeric_pages else 1
-
-    return 1
 
 
 def extract_cars_from_text(text: str) -> list[Car]:
@@ -64,10 +44,8 @@ def extract_cars_from_text(text: str) -> list[Car]:
     for block in valid_blocks:
         try:
             brand, model = [x.strip() for x in block[0].split("•")]
-
             year_line = block[1]
             year_str, km_str, version, transmission = [x.strip() for x in year_line.split("•")]
-
             year = int(year_str)
             km = int(km_str.lower().replace("km", "").replace(".", "").strip())
 
@@ -82,7 +60,6 @@ def extract_cars_from_text(text: str) -> list[Car]:
 
             price_actual = parse_price(price_lines[0]) if price_lines else 0
             price_original = parse_price(price_lines[1]) if len(price_lines) > 1 else None
-            print(block)
 
             location = next(
                 (
@@ -115,62 +92,34 @@ def extract_cars_from_text(text: str) -> list[Car]:
     return parsed_cars
 
 
-# -------------------- Ejecución principal --------------------
-
 def main():
-    all_cars = []
+    options = uc.ChromeOptions()
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1280,720")
+    options.add_argument("--lang=es-CL")
+    options.headless = True
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=False,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--no-sandbox",
-                "--disable-setuid-sandbox"
-            ]
-        )
+    driver = uc.Chrome(options=options)
 
-        context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            locale="es-CL",
-            viewport={"width": 1280, "height": 720}
-        )
+    try:
+        driver.get("https://www.kavak.com/cl/usados")
+        time.sleep(5)  # esperar carga (ajustar si necesario)
 
-        page = context.new_page()
+        content = driver.find_element(By.CSS_SELECTOR, ".results_results__container__tcF4_")
+        raw_text = content.text
 
-        # Evasión antiautomatización
-        page.add_init_script("""
-        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-        """)
+        cars = extract_cars_from_text(raw_text)
+        for car in cars:
+            print(f"{car.brand} {car.model} - {car.price_actual:,} CLP")
 
-        page.goto("https://www.kavak.com/cl/usados", timeout=60000)
+        save_to_json(cars)
 
-        total_pages = get_total_pages(page)
-        print(f"Total de páginas detectadas: {total_pages}")
-
-        for page_num in range(1):  # ajusta si deseas más páginas
-            print(f"Scrapeando página {page_num}...")
-            url = f"https://www.kavak.com/cl/usados?page={page_num}"
-            page.goto(url, timeout=60000, wait_until="networkidle")
-
-            content_selector = ".results_results__container__tcF4_"
-            page.wait_for_selector(content_selector, timeout=30000)
-
-            element = page.query_selector(content_selector)
-            if element:
-                raw_text = element.inner_text()
-                cars = extract_cars_from_text(raw_text)
-                all_cars.extend(cars)
-            else:
-                print(f"No se encontró el contenedor de autos en la página {page_num}.")
-
-        browser.close()
-
-    for car in all_cars:
-        print(f"{car.brand} {car.model} - {car.price_actual:,} CLP")
-
-    save_to_json(all_cars)
-
+    except Exception as e:
+        print(f"Error durante el scraping: {e}")
+        Path("error.png").write_bytes(driver.get_screenshot_as_png())
+    finally:
+        driver.quit()
 
 
 if __name__ == "__main__":

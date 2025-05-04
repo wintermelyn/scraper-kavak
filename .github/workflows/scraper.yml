@@ -2,7 +2,7 @@ name: Ejecutar Scraper cada 6 horas
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */6 * * *'  # Cada 6 horas
   workflow_dispatch:
 
 jobs:
@@ -18,22 +18,25 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Instalar Google Chrome
+        run: |
+          sudo apt update
+          sudo apt install -y wget gnupg unzip curl
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install -y ./google-chrome-stable_current_amd64.deb
+
       - name: Instalar Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Instalar dependencias con Poetry
+      - name: Instalar dependencias del proyecto
         working-directory: kavak_scraper
         run: poetry install --no-interaction
 
-      - name: Instalar solo Chromium para Playwright
+      - name: Ejecutar scraper
         working-directory: kavak_scraper
-        run: poetry run playwright install chromium
-
-      - name: Ejecutar scraper con Xvfb
-        working-directory: kavak_scraper
-        run: xvfb-run poetry run scrap
+        run: poetry run scrap
 
       - name: Subir screenshot si existe
         if: always()

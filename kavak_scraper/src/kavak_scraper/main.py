@@ -122,7 +122,14 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        page = browser.new_page(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            extra_http_headers={
+                "Accept-Language": "es-CL,es;q=0.9",
+                "Referer": "https://www.google.com/"
+            }
+        )
+
 
         page.goto("https://www.kavak.com/cl/usados", timeout=60000)
         total_pages = get_total_pages(page)

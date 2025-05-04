@@ -33,4 +33,4 @@ jobs:
 
       - name: Ejecutar scraper
         working-directory: kavak_scraper
-        run: poetry run python scraper/main.py
+        run: poetry run scrap

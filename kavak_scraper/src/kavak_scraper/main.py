@@ -117,7 +117,7 @@ def main():
     all_cars = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)  # prueba sin headless
+        browser = p.chromium.launch(headless=True)  # obligatorio en GitHub Actions
         page = browser.new_page(
             user_agent=(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -143,7 +143,7 @@ def main():
         total_pages = get_total_pages(page)
         print(f"Total de páginas detectadas: {total_pages}")
 
-        for page_num in range(1):  # Solo página 0
+        for page_num in range(1):
             print(f"Scrapeando página {page_num}...")
             url = f"https://www.kavak.com/cl/usados?page={page_num}"
             page.goto(url, timeout=60000, wait_until="networkidle")
@@ -167,7 +167,6 @@ def main():
         print(f"{car.brand} {car.model} - {car.price_actual:,} CLP")
 
     save_to_json(all_cars)
-
 
 
 if __name__ == "__main__":

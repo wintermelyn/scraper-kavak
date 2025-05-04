@@ -16,7 +16,7 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'  # Compatible con tu proyecto
+          python-version: '3.12'
 
       - name: Instalar Poetry
         run: |
@@ -27,9 +27,9 @@ jobs:
         working-directory: kavak_scraper
         run: poetry install --no-interaction
 
-      - name: Verificar archivos disponibles
+      - name: Instalar navegadores de Playwright
         working-directory: kavak_scraper
-        run: ls -R
+        run: poetry run playwright install --with-deps
 
       - name: Ejecutar scraper
         working-directory: kavak_scraper

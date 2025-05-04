@@ -26,9 +26,9 @@ def save_to_json(cars: list[Car], filename: str = "autos.json") -> None:
 # -------------------- Scraping --------------------
 
 def get_total_pages(page) -> int:
-    pagination_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[4]/div"
-    page.wait_for_selector(f"xpath={pagination_xpath}", timeout=30000)
-    pagination_container = page.query_selector(f"xpath={pagination_xpath}")
+    pagination_selector = ".results_results__pagination__yZaD_"
+    page.wait_for_selector(pagination_selector, timeout=30000)
+    pagination_container = page.query_selector(pagination_selector)
 
     if pagination_container:
         numbers = pagination_container.inner_text().split()
@@ -79,7 +79,6 @@ def extract_cars_from_text(text: str) -> list[Car]:
             price_original = parse_price(price_lines[1]) if len(price_lines) > 1 else None
             print(block)
 
-            # Obtiene ultimo elemnto de block que no contenga los siguientes textos
             location = next(
                 (
                     line for line in reversed(block)
@@ -120,19 +119,19 @@ def main():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        # Página inicial para conocer el total
         page.goto("https://www.kavak.com/cl/usados", timeout=60000)
         total_pages = get_total_pages(page)
         print(f"Total de páginas detectadas: {total_pages}")
 
-        for page_num in range(1):
+        for page_num in range(1):  # puedes cambiar a range(total_pages) si quieres todas las páginas
             print(f"Scrapeando página {page_num}...")
             url = f"https://www.kavak.com/cl/usados?page={page_num}"
             page.goto(url, timeout=60000, wait_until="networkidle")
-            content_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[3]"
-            page.wait_for_selector(f"xpath={content_xpath}", timeout=30000)
 
-            element = page.query_selector(f"xpath={content_xpath}")
+            content_selector = ".results_results__container__tcF4_"
+            page.wait_for_selector(content_selector, timeout=30000)
+
+            element = page.query_selector(content_selector)
             if element:
                 raw_text = element.inner_text()
                 cars = extract_cars_from_text(raw_text)

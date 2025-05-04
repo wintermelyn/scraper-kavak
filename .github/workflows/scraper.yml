@@ -25,8 +25,8 @@ jobs:
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install -y ./google-chrome-stable_current_amd64.deb
 
-      - name: Instalar distutils para Python 3.12
-        run: sudo apt-get install -y python3-distutils
+      - name: Instalar dependencias del sistema necesarias para Poetry y distutils
+        run: sudo apt-get install -y python3.12-venv
 
       - name: Instalar Poetry
         run: |

@@ -11,18 +11,21 @@ jobs:
 
     steps:
       - name: Clonar repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Configurar entorno Python y dependencias
-        uses: ./.github/actions/install-env
+      - name: Configurar Python
+        uses: actions/setup-python@v4
         with:
-          working-directory: kavak_scraper  # <-- Aquí se pasa el subdirectorio
+          python-version: '3.12'
 
-      - name: Cachear navegadores de Playwright
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-browsers-v1
+      - name: Instalar Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Instalar dependencias con Poetry
+        working-directory: kavak_scraper
+        run: poetry install --no-interaction
 
       - name: Instalar solo Chromium para Playwright
         working-directory: kavak_scraper

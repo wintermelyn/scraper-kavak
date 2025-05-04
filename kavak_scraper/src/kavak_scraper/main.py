@@ -117,28 +117,49 @@ def main():
     all_cars = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        browser = p.chromium.launch(headless=False)  # prueba sin headless
+        page = browser.new_page(
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+            ),
+            viewport={"width": 1280, "height": 800}
+        )
 
-        # Página inicial para conocer el total
-        page.goto("https://www.kavak.com/cl/usados", timeout=60000, wait_until="networkidle")
+        try:
+            print("Navegando a la página principal...")
+            page.goto("https://www.kavak.com/cl/usados", timeout=60000, wait_until="networkidle")
+
+            pagination_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[4]/div"
+            print("Esperando selector de paginación...")
+            page.wait_for_selector(f"xpath={pagination_xpath}", timeout=30000)
+        except Exception as e:
+            print("❌ Error esperando el selector:", e)
+            print("💾 Guardando HTML para depurar...")
+            Path("debug.html").write_text(page.content(), encoding="utf-8")
+            browser.close()
+            return
+
         total_pages = get_total_pages(page)
         print(f"Total de páginas detectadas: {total_pages}")
 
-        for page_num in range(1):
+        for page_num in range(1):  # Solo página 0
             print(f"Scrapeando página {page_num}...")
             url = f"https://www.kavak.com/cl/usados?page={page_num}"
             page.goto(url, timeout=60000, wait_until="networkidle")
             content_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[3]"
-            page.wait_for_selector(f"xpath={content_xpath}", timeout=30000)
 
-            element = page.query_selector(f"xpath={content_xpath}")
-            if element:
-                raw_text = element.inner_text()
-                cars = extract_cars_from_text(raw_text)
-                all_cars.extend(cars)
-            else:
-                print(f"No se encontró el contenedor de autos en la página {page_num}.")
+            try:
+                page.wait_for_selector(f"xpath={content_xpath}", timeout=30000)
+                element = page.query_selector(f"xpath={content_xpath}")
+                if element:
+                    raw_text = element.inner_text()
+                    cars = extract_cars_from_text(raw_text)
+                    all_cars.extend(cars)
+                else:
+                    print("⚠️ No se encontró el contenedor de autos.")
+            except Exception as e:
+                print("❌ Error esperando contenido:", e)
 
         browser.close()
 
@@ -146,6 +167,7 @@ def main():
         print(f"{car.brand} {car.model} - {car.price_actual:,} CLP")
 
     save_to_json(all_cars)
+
 
 
 if __name__ == "__main__":

@@ -2,20 +2,7 @@ import re
 import json
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-from pydantic import BaseModel
-
-
-class Car(BaseModel):
-    brand: str
-    model: str
-    year: int
-    km: int
-    version: str
-    transmission: str
-    price_actual: int
-    price_original: int | None
-    location: str
-
+from kavak_scraper.models import Car
 
 
 # -------------------- Utilidades --------------------
@@ -134,8 +121,7 @@ def main():
     all_cars = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="chrome", headless=True)
-
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             extra_http_headers={

@@ -2,7 +2,20 @@ import re
 import json
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-from kavak_scraper.models import Car
+from pydantic import BaseModel
+
+
+class Car(BaseModel):
+    brand: str
+    model: str
+    year: int
+    km: int
+    version: str
+    transmission: str
+    price_actual: int
+    price_original: int | None
+    location: str
+
 
 
 # -------------------- Utilidades --------------------

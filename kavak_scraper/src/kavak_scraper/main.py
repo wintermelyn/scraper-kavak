@@ -27,7 +27,7 @@ def save_to_json(cars: list[Car], filename: str = "autos.json") -> None:
 
 def get_total_pages(page) -> int:
     pagination_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[4]/div"
-    page.wait_for_selector(f"xpath={pagination_xpath}", timeout=30000)
+    page.wait_for_selector(f"xpath={pagination_xpath}", timeout=90000)
     pagination_container = page.query_selector(f"xpath={pagination_xpath}")
 
     if pagination_container:
@@ -132,7 +132,7 @@ def main():
 
             pagination_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[4]/div"
             print("Esperando selector de paginación...")
-            page.wait_for_selector(f"xpath={pagination_xpath}", timeout=30000)
+            page.wait_for_selector(f"xpath={pagination_xpath}", timeout=90000)
         except Exception as e:
             print("❌ Error esperando el selector:", e)
             print("💾 Guardando HTML para depurar...")
@@ -150,7 +150,7 @@ def main():
             content_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[3]"
 
             try:
-                page.wait_for_selector(f"xpath={content_xpath}", timeout=30000)
+                page.wait_for_selector(f"xpath={content_xpath}", timeout=90000)
                 element = page.query_selector(f"xpath={content_xpath}")
                 if element:
                     raw_text = element.inner_text()

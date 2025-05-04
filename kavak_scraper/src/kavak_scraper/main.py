@@ -117,7 +117,7 @@ def main():
     all_cars = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
         # Página inicial para conocer el total

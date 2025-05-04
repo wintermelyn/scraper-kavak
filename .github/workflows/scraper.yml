@@ -2,7 +2,7 @@ name: Ejecutar Scraper cada 6 horas
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Cada 6 horas
+    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -31,9 +31,9 @@ jobs:
         working-directory: kavak_scraper
         run: poetry run playwright install chromium
 
-      - name: Ejecutar scraper
+      - name: Ejecutar scraper con Xvfb
         working-directory: kavak_scraper
-        run: poetry run scrap
+        run: xvfb-run poetry run scrap
 
       - name: Subir screenshot si existe
         if: always()

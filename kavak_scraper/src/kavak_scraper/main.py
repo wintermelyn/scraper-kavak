@@ -121,31 +121,40 @@ def main():
     all_cars = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            extra_http_headers={
-                "Accept-Language": "es-CL,es;q=0.9",
-                "Referer": "https://www.google.com/"
-            }
+        browser = p.chromium.launch(
+            headless=False,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-setuid-sandbox"
+            ]
         )
 
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            locale="es-CL",
+            viewport={"width": 1280, "height": 720}
+        )
+
+        page = context.new_page()
+
+        # Evasión antiautomatización
+        page.add_init_script("""
+        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+        """)
 
         page.goto("https://www.kavak.com/cl/usados", timeout=60000)
+
         total_pages = get_total_pages(page)
         print(f"Total de páginas detectadas: {total_pages}")
 
-        for page_num in range(1):  # puedes cambiar a range(total_pages) si quieres todas las páginas
+        for page_num in range(1):  # ajusta si deseas más páginas
             print(f"Scrapeando página {page_num}...")
             url = f"https://www.kavak.com/cl/usados?page={page_num}"
             page.goto(url, timeout=60000, wait_until="networkidle")
 
             content_selector = ".results_results__container__tcF4_"
-            try:
-                page.wait_for_selector(content_selector, timeout=30000)
-            except Exception as e:
-                print(f"Error al esperar el selector de contenido: {e}")
-                page.screenshot(path="error.png")
+            page.wait_for_selector(content_selector, timeout=30000)
 
             element = page.query_selector(content_selector)
             if element:
@@ -161,6 +170,7 @@ def main():
         print(f"{car.brand} {car.model} - {car.price_actual:,} CLP")
 
     save_to_json(all_cars)
+
 
 
 if __name__ == "__main__":

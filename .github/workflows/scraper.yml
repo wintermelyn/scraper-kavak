@@ -33,12 +33,21 @@ jobs:
 
       - name: Ejecutar scraper
         working-directory: kavak_scraper
-        continue-on-error: true  # permite que falle sin detener todo
+        continue-on-error: true  # Permitir fallo sin detener el workflow
         run: poetry run scrap
 
-      - name: Subir captura si falla
-        if: failure() && exists('kavak_scraper/error.png')
+      - name: Preparar captura si existe
+        if: failure()
+        run: |
+          if [ -f "kavak_scraper/error.png" ]; then
+            mkdir -p temp_upload
+            cp kavak_scraper/error.png temp_upload/
+          fi
+
+      - name: Subir captura si fue generada
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: screenshot-error
-          path: kavak_scraper/error.png
+          path: temp_upload/error.png
+          if-no-files-found: ignore

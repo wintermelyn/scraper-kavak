@@ -121,14 +121,14 @@ def main():
         page = browser.new_page()
 
         # Página inicial para conocer el total
-        page.goto("https://www.kavak.com/cl/usados", timeout=60000)
+        page.goto("https://www.kavak.com/cl/usados", timeout=60000, wait_until="networkidle")
         total_pages = get_total_pages(page)
         print(f"Total de páginas detectadas: {total_pages}")
 
         for page_num in range(1):
             print(f"Scrapeando página {page_num}...")
             url = f"https://www.kavak.com/cl/usados?page={page_num}"
-            page.goto(url, timeout=60000)
+            page.goto(url, timeout=60000, wait_until="networkidle")
             content_xpath = "/html/body/div[1]/main/div/div[1]/section/article/div[3]"
             page.wait_for_selector(f"xpath={content_xpath}", timeout=30000)
 

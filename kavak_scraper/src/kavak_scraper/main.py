@@ -13,6 +13,10 @@ def parse_price(text: str) -> int | None:
         return int(digits[0].replace(".", ""))
     return None
 
+def load_cookies_from_file(path="cookies.json") -> list[dict]:
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
 
 def save_to_json(cars: list[Car], filename: str = "autos.json") -> None:
     data = [car.model_dump() for car in cars]
@@ -122,11 +126,18 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+
+        context.add_cookies(load_cookies_from_file())
+
         page = browser.new_page()
 
         page.goto("https://www.kavak.com/cl/usados", timeout=60000)
         total_pages = get_total_pages(page)
         print(f"Total de páginas detectadas: {total_pages}")
+        page.screenshot(path="verificacion_login.png", full_page=True)
+        print("Screenshot guardada como 'verificacion_login.png'")
+
 
         for page_num in range(1):  # puedes cambiar a range(total_pages) si quieres todas las páginas
             print(f"Scrapeando página {page_num}...")

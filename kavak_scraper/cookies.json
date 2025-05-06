@@ -1,0 +1,113 @@
+[
+    {
+      "name": "_ALGOLIA",
+      "value": "anonymous-22489325-96fa-4b9f-baa1-96aa33dc2242",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1749895500,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "_dd_s",
+      "value": "rum=0&expire=1746544000066",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1746544000,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "AMP_1b6e47cd9c",
+      "value": "JTdCJTIyZGV2aWNlSWQMjIlM0EJMjZOGMwNTA...",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1766162210,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "g_state",
+      "value": "{\"i_p\":1746652698397,\"i_l\":3}",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1751362698,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "olimpo_v2_access-token",
+      "value": "ZQB5AEoAaABiAEcAYwBpAEBAaQo...",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "olimpo_v2_date",
+      "value": "IgAyADAAMgA1AC0AMAA1AC0AMAA...",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "olimpo_v2_user",
+      "value": "ewAiAGUAObQHAGkAbAAiADoAlgBtA...",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1762107871,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "None"
+    },
+    {
+      "name": "x-kavak-token-type",
+      "value": "urn%3Akavak%3Atoken-type%3Asession",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1751382770,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "x-kavak-token",
+      "value": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImkyQ...",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1751382770,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "x-platform-login",
+      "value": "1",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1751382770,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "{16b310ed-4096-46c3-9dec-da08930d9f84}",
+      "value": "value",
+      "domain": ".kavak.com",
+      "path": "/",
+      "expires": 1746629342,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ]
+  
